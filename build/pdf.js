@@ -1704,7 +1704,7 @@ class PDFPageProxy {
   }
 
   getJSActions() {
-    return this._jsActionsPromise ||= this._transport.getPageJSActions(this._pageIndex);
+    return this._jsActionsPromise ? this._jsActionsPromise : this._transport.getPageJSActions(this._pageIndex);
   }
 
   async getXfa() {
@@ -1829,7 +1829,7 @@ class PDFPageProxy {
       useRequestAnimationFrame: !intentPrint,
       pdfBug: this._pdfBug
     });
-    (intentState.renderTasks ||= new Set()).add(internalRenderTask);
+    (intentState.renderTasks ? intentState.renderTasks : new Set()).add(internalRenderTask);
     const renderTask = internalRenderTask.task;
     Promise.all([intentState.displayReadyCapability.promise, optionalContentConfigPromise]).then(([transparency, optionalContentConfig]) => {
       if (this.pendingCleanup) {
@@ -1877,7 +1877,7 @@ class PDFPageProxy {
       opListTask = Object.create(null);
       opListTask.operatorListChanged = operatorListChanged;
       intentState.opListReadCapability = (0, _util.createPromiseCapability)();
-      (intentState.renderTasks ||= new Set()).add(opListTask);
+      (intentState.renderTasks ? intentState.renderTasks : new Set()).add(opListTask);
       intentState.operatorList = {
         fnArray: [],
         argsArray: [],
@@ -1948,7 +1948,7 @@ class PDFPageProxy {
   }
 
   getStructTree() {
-    return this._structTreePromise ||= this._transport.getStructTree(this._pageIndex);
+    return this._structTreePromise ? this._structTreePromise : this._transport.getStructTree(this._pageIndex);
   }
 
   _destroy() {
@@ -3030,11 +3030,11 @@ class WorkerTransport {
   }
 
   getFieldObjects() {
-    return this._getFieldObjectsPromise ||= this.messageHandler.sendWithPromise("GetFieldObjects", null);
+    return this._getFieldObjectsPromise ? this._getFieldObjectsPromise : this.messageHandler.sendWithPromise("GetFieldObjects", null);
   }
 
   hasJSActions() {
-    return this._hasJSActionsPromise ||= this.messageHandler.sendWithPromise("HasJSActions", null);
+    return this._hasJSActionsPromise ? this._hasJSActionsPromise : this.messageHandler.sendWithPromise("HasJSActions", null);
   }
 
   getCalculationOrderIds() {
@@ -3114,7 +3114,7 @@ class WorkerTransport {
   }
 
   getMetadata() {
-    return this.#metadataPromise ||= this.messageHandler.sendWithPromise("GetMetadata", null).then(results => {
+    return this.#metadataPromise ? this.#metadataPromise : this.messageHandler.sendWithPromise("GetMetadata", null).then(results => {
       return {
         info: results[0],
         metadata: results[1] ? new _metadata.Metadata(results[1]) : null,
